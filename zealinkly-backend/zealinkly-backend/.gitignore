@@ -1,0 +1,49 @@
+HELP.md
+target/
+.mvn/
+!**/src/main/**/target/
+!**/src/test/**/target/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### 本地配置（勿提交）###
+application-local.yaml
+application-local.yml
+
+### 大文件和文档（可选，如果不需要提交）###
+*.docx
+*.pdf
+*.zip
+*.rar
+*.7z
