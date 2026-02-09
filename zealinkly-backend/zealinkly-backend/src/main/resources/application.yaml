@@ -5,10 +5,15 @@ spring:
   application:
     name: zealinkly-backend
   datasource:
-    url: jdbc:postgresql://43.143.226.28:5432/zealinkly_db
-    username: postgres
-    password: ZEAL-LINK
+    # 数据库连接信息请在 application-local.yaml 中配置
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/zealinkly_db}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 10
+      minimum-idle: 2
   jpa:
     hibernate:
       ddl-auto: update
@@ -19,9 +24,10 @@ spring:
         format_sql: true
   data:
     redis:
-      host: localhost
-      port: 6379
-      password: ''
+      # Redis 连接信息请在 application-local.yaml 中配置
+      host: ${SPRING_REDIS_HOST:localhost}
+      port: ${SPRING_REDIS_PORT:6379}
+      password: ${SPRING_REDIS_PASSWORD:}
       timeout: 5000ms
       lettuce:
         pool:
@@ -31,6 +37,34 @@ spring:
       repositories:
         enabled: false
 
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
 jwt:
-  secret: change-me
+  # JWT 密钥请在 application-local.yaml 中配置
+  secret: ${JWT_SECRET:change-me-please-set-in-local-config}
   expiration: 604800000
+
+# DeepSeek API（可选，不配置时 AI 会返回提示语）
+# 每月 1 号 0 点给老人发放的积分数量
+app:
+  deepseek:
+    # DeepSeek API Key 请在 application-local.yaml 中配置，或使用环境变量 DEEPSEEK_API_KEY
+    api-key: ${DEEPSEEK_API_KEY:}
+  baidu-ocr:
+    # 百度OCR配置（请在 application-local.yaml 中配置）
+    app-id: ${BAIDU_OCR_APP_ID:}
+    api-key: ${BAIDU_OCR_API_KEY:}
+    secret-key: ${BAIDU_OCR_SECRET_KEY:}
+  points:
+    # 每月给老人发放的积分数量
+    monthly-elder-points: ${MONTHLY_ELDER_POINTS:100}
+    # 任务奖励积分的默认值（如果用户不指定）
+    default-task-reward: ${DEFAULT_TASK_REWARD:0}
+    # 用户初始积分数值
+    initial-elder-points: ${INITIAL_ELDER_POINTS:0}
+    initial-volunteer-points: ${INITIAL_VOLUNTEER_POINTS:0}

@@ -1,8 +1,13 @@
 package com.hyan.zealinklybackend.entity;
 
+/**
+ * 统一任务状态（与 schema tasks.status 一致）
+ */
 public enum TaskStatus {
-    PLACED,    // 老人已发布，等待志愿者领取
-    TAKEN,     // 志愿者已接单，正在进行中
-    COMPLETED, // 任务已完成
-    CANCELED   // 任务已取消
+    PENDING,     // 待处理/待接单
+    CLAIMED,     // 已接单/已认领
+    IN_PROGRESS, // 进行中
+    SUBMITTED,   // 已提交（待确认）
+    COMPLETED,   // 已完成
+    CANCELLED    // 已取消
 }

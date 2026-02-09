@@ -1,5 +1,6 @@
 package com.hyan.zealinklybackend.controller;
 
+import com.hyan.zealinklybackend.dto.request.CardLoginRequest;
 import com.hyan.zealinklybackend.dto.request.LoginRequest;
 import com.hyan.zealinklybackend.dto.request.RegisterRequest;
 import com.hyan.zealinklybackend.dto.response.ApiResponse;
@@ -53,6 +54,15 @@ public class AuthController {
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = authService.login(request);
+        return ApiResponse.success("登录成功", response);
+    }
+
+    /**
+     * 卡片登录（身份证或社区卡）
+     */
+    @PostMapping("/login-by-card")
+    public ApiResponse<LoginResponse> loginByCard(@Valid @RequestBody CardLoginRequest request) {
+        LoginResponse response = authService.loginByCard(request);
         return ApiResponse.success("登录成功", response);
     }
 }

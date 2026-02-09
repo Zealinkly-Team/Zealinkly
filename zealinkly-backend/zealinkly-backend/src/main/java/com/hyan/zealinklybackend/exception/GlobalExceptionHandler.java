@@ -68,12 +68,16 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * 处理其他异常
+     * 处理其他异常（开发时返回异常信息便于排查）
      */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiResponse<?> handleException(Exception e) {
         log.error("系统异常", e);
-        return ApiResponse.error(500, "系统内部错误，请稍后重试");
+        String msg = e.getMessage() != null ? e.getMessage() : e.getClass().getName();
+        if (e.getCause() != null) {
+            msg = msg + "; cause: " + e.getCause().getMessage();
+        }
+        return ApiResponse.error(500, "系统内部错误，请稍后重试: " + msg);
     }
 }

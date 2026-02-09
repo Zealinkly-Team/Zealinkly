@@ -32,11 +32,20 @@ public class Volunteer {
     @Column(length = 20)
     private String phone;
 
+    @Column(name = "id_card_number", length = 18)
+    private String idCardNumber;
+
+    @Column(name = "community_card_number", length = 50)
+    private String communityCardNumber;
+
     @Column(columnDefinition = "INT DEFAULT 0")
     private Integer points = 0;
 
     @Column(name = "id_card_status", nullable = false)
     private Boolean idCardStatus = false;
+
+    @Column(nullable = false)
+    private Boolean enabled = true;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
@@ -51,6 +60,9 @@ public class Volunteer {
         }
         if (idCardStatus == null) {
             idCardStatus = false;
+        }
+        if (enabled == null) {
+            enabled = true;
         }
     }
 }

@@ -1,0 +1,40 @@
+# 本地配置示例文件
+# 复制此文件为 application-local.yaml 并填入实际配置
+# application-local.yaml 已加入 .gitignore，不会提交到 GitHub
+
+spring:
+  datasource:
+    # 数据库连接配置
+    url: jdbc:postgresql://your-db-host:5432/zealinkly_db
+    username: your-db-username
+    password: your-db-password
+  data:
+    redis:
+      # Redis 连接配置
+      host: your-redis-host
+      port: 6379
+      password: your-redis-password
+
+jwt:
+  # JWT 密钥（请使用强密码，建议至少 32 位随机字符串）
+  secret: your-jwt-secret-key-here-minimum-32-characters-long
+  expiration: 604800000
+
+app:
+  deepseek:
+    # DeepSeek API Key（可选，不配置时 AI 会返回提示语）
+    # 也可以使用环境变量 DEEPSEEK_API_KEY
+    api-key: your-deepseek-api-key-here
+  baidu-ocr:
+    # 百度OCR配置（也可以使用环境变量 BAIDU_OCR_APP_ID / BAIDU_OCR_API_KEY / BAIDU_OCR_SECRET_KEY）
+    app-id: your-baidu-ocr-app-id
+    api-key: your-baidu-ocr-api-key
+    secret-key: your-baidu-ocr-secret-key
+  points:
+    # 每月给老人发放的积分数量（也可以使用环境变量 MONTHLY_ELDER_POINTS）
+    monthly-elder-points: 100
+    # 任务奖励积分的默认值（如果用户不指定，也可以使用环境变量 DEFAULT_TASK_REWARD）
+    default-task-reward: 0
+    # 用户注册时的初始积分数值（也可以使用环境变量 INITIAL_ELDER_POINTS / INITIAL_VOLUNTEER_POINTS）
+    initial-elder-points: 0
+    initial-volunteer-points: 0

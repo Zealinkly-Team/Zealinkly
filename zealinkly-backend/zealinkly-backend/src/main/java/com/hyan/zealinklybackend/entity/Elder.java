@@ -35,6 +35,12 @@ public class Elder {
 
     private String address;
 
+    @Column(name = "id_card_number", length = 18)
+    private String idCardNumber;
+
+    @Column(name = "community_card_number", length = 50)
+    private String communityCardNumber;
+
     @Column(columnDefinition = "INT DEFAULT 0")
     private Integer points = 0;
 
@@ -43,6 +49,9 @@ public class Elder {
 
     @Column(precision = 11, scale = 8)
     private BigDecimal lng;
+
+    @Column(nullable = false)
+    private Boolean enabled = true;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
@@ -54,6 +63,9 @@ public class Elder {
         }
         if (points == null) {
             points = 0;
+        }
+        if (enabled == null) {
+            enabled = true;
         }
     }
 }
