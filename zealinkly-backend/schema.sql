@@ -132,6 +132,22 @@ CREATE TABLE task_evidence (
     created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE file_storage (
+    id SERIAL PRIMARY KEY,
+    file_type VARCHAR(20) NOT NULL,
+    original_filename VARCHAR(255),
+    stored_filename VARCHAR(500) NOT NULL,
+    file_url VARCHAR(500) NOT NULL,
+    file_size BIGINT NOT NULL,
+    content_type VARCHAR(100),
+    file_extension VARCHAR(20),
+    uploader_type VARCHAR(20),
+    uploader_id INT,
+    related_type VARCHAR(50),
+    related_id INT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE notifications (
     id SERIAL PRIMARY KEY,
     receiver_type VARCHAR(20) NOT NULL CHECK (receiver_type IN ('ELDER', 'VOLUNTEER', 'ADMIN')),

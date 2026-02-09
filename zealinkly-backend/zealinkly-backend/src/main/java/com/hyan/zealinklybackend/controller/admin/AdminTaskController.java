@@ -33,8 +33,12 @@ public class AdminTaskController {
     @GetMapping
     public ApiResponse<Page<TaskResponse>> list(
             @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam(required = false) Long volunteerId,
             @PageableDefault(size = 20) Pageable pageable) {
         requireAdmin(principal);
+        if (volunteerId != null) {
+            return ApiResponse.success(adminTaskService.listByVolunteer(volunteerId, pageable));
+        }
         return ApiResponse.success(adminTaskService.listAll(pageable));
     }
 

@@ -74,6 +74,11 @@ app:
     app-id: ${BAIDU_OCR_APP_ID:}
     api-key: ${BAIDU_OCR_API_KEY:}
     secret-key: ${BAIDU_OCR_SECRET_KEY:}
+  baidu-asr:
+    # 百度语音识别配置（请在 application-local.yaml 中配置）
+    app-id: ${BAIDU_ASR_APP_ID:}
+    api-key: ${BAIDU_ASR_API_KEY:}
+    secret-key: ${BAIDU_ASR_SECRET_KEY:}
   points:
     # 每月给老人发放的积分数量
     monthly-elder-points: ${MONTHLY_ELDER_POINTS:100}
@@ -82,3 +87,8 @@ app:
     # 用户初始积分数值
     initial-elder-points: ${INITIAL_ELDER_POINTS:0}
     initial-volunteer-points: ${INITIAL_VOLUNTEER_POINTS:0}
+  file:
+    # 文件上传配置
+    upload-dir: ${FILE_UPLOAD_DIR:uploads}
+    base-url: ${FILE_BASE_URL:http://localhost:8080/api/files}
+    max-size: ${FILE_MAX_SIZE:10485760}  # 10MB

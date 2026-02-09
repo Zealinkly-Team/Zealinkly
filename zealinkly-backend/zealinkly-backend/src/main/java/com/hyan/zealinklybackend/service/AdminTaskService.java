@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,27 @@ public class AdminTaskService {
                 })
                 .collect(Collectors.toList());
         return new org.springframework.data.domain.PageImpl<>(content, pageable, page.getTotalElements());
+    }
+
+    /** 管理员：根据志愿者ID查询任务（分页） */
+    @Transactional(readOnly = true)
+    public Page<TaskResponse> listByVolunteer(Long volunteerId, Pageable pageable) {
+        List<Task> tasks = taskRepository.findByTaskTypeAndVolunteerIdOrderByCreatedAtDesc(
+                com.hyan.zealinklybackend.entity.TaskType.COOPERATION, volunteerId);
+        
+        // 手动分页
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), tasks.size());
+        List<Task> pagedTasks = start < tasks.size() ? tasks.subList(start, end) : new ArrayList<>();
+        
+        List<TaskResponse> content = pagedTasks.stream()
+                .map(task -> {
+                    Task loaded = taskRepository.findByIdWithAssociations(task.getId()).orElse(task);
+                    return TaskResponse.fromEntity(loaded);
+                })
+                .collect(Collectors.toList());
+        
+        return new PageImpl<>(content, pageable, tasks.size());
     }
 
     /** 管理员：任务详情（含凭证、积分流水） */
