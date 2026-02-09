@@ -4,9 +4,11 @@ spring:
     import: optional:classpath:application-local.yaml
   application:
     name: zealinkly-backend
+  jackson:
+    time-zone: Asia/Shanghai
   datasource:
     # 数据库连接信息请在 application-local.yaml 中配置
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/zealinkly_db}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/zealinkly_db?TimeZone=Asia/Shanghai}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:}
     driver-class-name: org.postgresql.Driver
@@ -48,6 +50,18 @@ jwt:
   # JWT 密钥请在 application-local.yaml 中配置
   secret: ${JWT_SECRET:change-me-please-set-in-local-config}
   expiration: 604800000
+
+# LangChain4j配置（用于意图识别）
+langchain4j:
+  # DeepSeek兼容OpenAI API，使用open-ai配置
+  open-ai:
+    chat-model:
+      base-url: ${LANGCHAIN4J_BASE_URL:https://api.deepseek.com}
+      api-key: ${LANGCHAIN4J_API_KEY:}
+      model-name: ${LANGCHAIN4J_MODEL_NAME:deepseek-chat}
+      temperature: ${LANGCHAIN4J_TEMPERATURE:0.7}
+      log-requests: ${LANGCHAIN4J_LOG_REQUESTS:false}
+      log-responses: ${LANGCHAIN4J_LOG_RESPONSES:false}
 
 # DeepSeek API（可选，不配置时 AI 会返回提示语）
 # 每月 1 号 0 点给老人发放的积分数量

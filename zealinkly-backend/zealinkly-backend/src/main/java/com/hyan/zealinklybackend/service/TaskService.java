@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hyan.zealinklybackend.dto.request.EvidenceItemRequest;
 import com.hyan.zealinklybackend.dto.response.AiChatItemResponse;
+import com.hyan.zealinklybackend.dto.response.EmergencyContactResponse;
+import com.hyan.zealinklybackend.dto.response.EmergencyDetailResponse;
 import com.hyan.zealinklybackend.dto.response.EvidenceItemResponse;
 import com.hyan.zealinklybackend.dto.response.TaskResponse;
 import com.hyan.zealinklybackend.entity.*;
@@ -38,6 +40,7 @@ public class TaskService {
     private final PointsLedgerRepository pointsLedgerRepository;
     private final TaskEvidenceRepository taskEvidenceRepository;
     private final AppealRepository appealRepository;
+    private final com.hyan.zealinklybackend.repository.EmergencyContactRepository emergencyContactRepository;
     private final ObjectMapper objectMapper;
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -290,6 +293,74 @@ public class TaskService {
         return list.stream().map(TaskResponse::fromEntity).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public EmergencyDetailResponse getEmergencyDetail(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new BusinessException("报警记录不存在"));
+        
+        if (task.getTaskType() != TaskType.EMERGENCY) {
+            throw new BusinessException("任务类型错误，不是紧急报警");
+        }
+        
+        if (task.getElder() == null) {
+            throw new BusinessException("报警记录缺少老人信息");
+        }
+        
+        Elder elder = task.getElder();
+        
+        // 获取紧急联系人
+        List<com.hyan.zealinklybackend.entity.EmergencyContact> contacts = 
+                emergencyContactRepository.findByElderIdOrderByPriorityAsc(elder.getId());
+        List<EmergencyContactResponse> contactResponses = contacts.stream()
+                .map(contact -> EmergencyContactResponse.builder()
+                        .id(contact.getId())
+                        .name(contact.getName())
+                        .relation(contact.getRelation())
+                        .phone(contact.getPhone())
+                        .priority(contact.getPriority())
+                        .build())
+                .collect(Collectors.toList());
+        
+        // 构建定位信息
+        EmergencyDetailResponse.LocationInfo locationInfo = EmergencyDetailResponse.LocationInfo.builder()
+                .lat(elder.getLat())
+                .lng(elder.getLng())
+                .address(elder.getAddress())
+                .displayText(buildLocationDisplayText(elder))
+                .build();
+        
+        // 构建老人信息
+        EmergencyDetailResponse.ElderInfo elderInfo = EmergencyDetailResponse.ElderInfo.builder()
+                .id(elder.getId())
+                .username(elder.getUsername())
+                .realName(elder.getRealName())
+                .phone(elder.getPhone())
+                .address(elder.getAddress())
+                .idCardNumber(elder.getIdCardNumber())
+                .communityCardNumber(elder.getCommunityCardNumber())
+                .build();
+        
+        return EmergencyDetailResponse.builder()
+                .task(TaskResponse.fromEntity(task))
+                .elderInfo(elderInfo)
+                .emergencyContacts(contactResponses)
+                .location(locationInfo)
+                .build();
+    }
+    
+    /**
+     * 构建定位显示文本
+     */
+    private String buildLocationDisplayText(Elder elder) {
+        if (elder.getAddress() != null && !elder.getAddress().isEmpty()) {
+            return elder.getAddress();
+        }
+        if (elder.getLat() != null && elder.getLng() != null) {
+            return String.format("坐标：%s, %s", elder.getLat(), elder.getLng());
+        }
+        return "未提供定位信息";
+    }
+
     @Transactional
     public TaskResponse handleEmergency(Long taskId, Long adminId, String note) {
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new BusinessException("报警记录不存在"));
@@ -359,6 +430,10 @@ public class TaskService {
     private static String buildCooperationContent(String title, String description) {
         if (description == null || description.isBlank()) {
             return title != null ? title : "";
+        }
+        // 如果title和description相同，避免重复
+        if (title != null && title.equals(description)) {
+            return description;
         }
         return (title != null ? title : "") + "\n\n" + description;
     }

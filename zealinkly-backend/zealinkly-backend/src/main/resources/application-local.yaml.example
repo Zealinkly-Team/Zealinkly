@@ -38,3 +38,22 @@ app:
     # 用户注册时的初始积分数值（也可以使用环境变量 INITIAL_ELDER_POINTS / INITIAL_VOLUNTEER_POINTS）
     initial-elder-points: 0
     initial-volunteer-points: 0
+
+# LangChain4j配置（用于意图识别）
+langchain4j:
+  # DeepSeek兼容OpenAI API
+  open-ai:
+    chat-model:
+      base-url: https://api.deepseek.com
+      api-key: your-deepseek-api-key
+      model-name: deepseek-chat
+      temperature: 0.7
+      log-requests: false
+      log-responses: false
+    # 每月给老人发放的积分数量（也可以使用环境变量 MONTHLY_ELDER_POINTS）
+    monthly-elder-points: 100
+    # 任务奖励积分的默认值（如果用户不指定，也可以使用环境变量 DEFAULT_TASK_REWARD）
+    default-task-reward: 0
+    # 用户注册时的初始积分数值（也可以使用环境变量 INITIAL_ELDER_POINTS / INITIAL_VOLUNTEER_POINTS）
+    initial-elder-points: 0
+    initial-volunteer-points: 0

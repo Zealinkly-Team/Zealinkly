@@ -3,6 +3,7 @@ package com.hyan.zealinklybackend.controller;
 import com.hyan.zealinklybackend.dto.request.HandleEmergencyRequest;
 import com.hyan.zealinklybackend.dto.request.TriggerEmergencyRequest;
 import com.hyan.zealinklybackend.dto.response.ApiResponse;
+import com.hyan.zealinklybackend.dto.response.EmergencyDetailResponse;
 import com.hyan.zealinklybackend.dto.response.TaskResponse;
 import com.hyan.zealinklybackend.security.UserPrincipal;
 import com.hyan.zealinklybackend.service.TaskService;
@@ -43,6 +44,18 @@ public class EmergencyController {
         }
         List<TaskResponse> list = taskService.getPendingEmergencies();
         return ApiResponse.success(list);
+    }
+
+    /** 管理员：获取紧急报警详情（包含老人信息、紧急联系人、定位信息） */
+    @GetMapping("/{id}/detail")
+    public ApiResponse<EmergencyDetailResponse> getDetail(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id) {
+        if (!"ADMIN".equals(principal.getUserType())) {
+            return ApiResponse.error(403, "仅管理员可查看报警详情");
+        }
+        EmergencyDetailResponse detail = taskService.getEmergencyDetail(id);
+        return ApiResponse.success(detail);
     }
 
     /** 管理员：标记已处理 */
