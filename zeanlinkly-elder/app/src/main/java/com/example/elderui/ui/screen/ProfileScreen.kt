@@ -28,7 +28,8 @@ import com.example.elderui.ui.component.*
 fun ProfileScreen(
     onLogout: () -> Unit = {},
     onNavigateToNotifications: () -> Unit = {},
-    onNavigateToEmergencyContacts: () -> Unit = {}
+    onNavigateToEmergencyContacts: () -> Unit = {},
+    onNavigateToAboutUs: () -> Unit = {}
 ) {
     val factory = rememberAppViewModelFactory()
     val userViewModel: UserViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = factory)
@@ -135,9 +136,7 @@ fun ProfileScreen(
                 QuickActionItem(
                     icon = Icons.Filled.Help,
                     label = "关于我们",
-                    onClick = {
-                        Toast.makeText(context, "关于我们\n智链邻里 v1.0\n老人服务平台", Toast.LENGTH_LONG).show()
-                    }
+                    onClick = onNavigateToAboutUs
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))

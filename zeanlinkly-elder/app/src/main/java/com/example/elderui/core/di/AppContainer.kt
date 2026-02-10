@@ -9,8 +9,20 @@ import com.example.elderui.core.repository.UserRepository
 
 class AppContainer(context: Context) {
     companion object {
-        // Emulator uses 10.0.2.2 for host loopback.
-        const val BASE_URL = "http://10.0.2.2:8080"
+        // 配置说明：
+        // Android 模拟器访问本机 → http://10.0.2.2:8080
+        // 本地开发电脑 → http://localhost:8080
+        // 局域网其他设备 → http://192.168.1.x:8080（根据实际IP修改）
+        // 远程服务器 → http://api.example.com
+
+        // 当前配置：Android 模拟器模式
+        // 如需修改，在下面选择合适的地址并取消注释
+
+        const val BASE_URL = "http://10.0.2.2:8080"  // ✅ 模拟器连接本机
+
+        // const val BASE_URL = "http://localhost:8080"  // 本地开发电脑
+        // const val BASE_URL = "http://192.168.1.100:8080"  // 局域网（改为你的电脑IP）
+//         const val BASE_URL = "https://43.143.226.28:8080"  // 远程服务器
     }
 
     private val apiClientFactory = ApiClientFactory(context)

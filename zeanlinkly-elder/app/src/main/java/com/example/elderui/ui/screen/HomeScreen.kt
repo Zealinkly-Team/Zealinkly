@@ -84,7 +84,8 @@ fun HomeScreen(onLogout: () -> Unit) {
                 ProfileScreen(
                     onLogout = onLogout,
                     onNavigateToNotifications = { navController.navigate("notifications") },
-                    onNavigateToEmergencyContacts = { navController.navigate("emergency_contacts") }
+                    onNavigateToEmergencyContacts = { navController.navigate("emergency_contacts") },
+                    onNavigateToAboutUs = { navController.navigate("about_us") }
                 )
             }
             composable("chat") {
@@ -98,6 +99,11 @@ fun HomeScreen(onLogout: () -> Unit) {
             composable("emergency_contacts") {
                 EmergencyContactScreen(
                     onBack = { navController.popBackStack() }
+                )
+            }
+            composable("about_us") {
+                AboutUsScreen(
+                    onBackClick = { navController.popBackStack() }
                 )
             }
         }

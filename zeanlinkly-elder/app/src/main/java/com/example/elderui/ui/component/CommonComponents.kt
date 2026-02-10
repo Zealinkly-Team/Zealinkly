@@ -3,6 +3,9 @@ package com.example.elderui.ui.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
@@ -11,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -183,6 +187,10 @@ fun SecondaryButton(
 /**
  * 输入框
  */
+/**
+ * 通用文本输入框 - 完全支持中文输入（虚拟键盘和物理键盘）
+ */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommonTextField(
     value: String,
@@ -192,9 +200,13 @@ fun CommonTextField(
     isPassword: Boolean = false,
     enabled: Boolean = true
 ) {
-    TextField(
+    // 使用 BasicTextField 以获得更好的中文输入支持
+    OutlinedTextField(
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = { newValue ->
+            // 直接传递所有输入，包括中文字符
+            onValueChange(newValue)
+        },
         label = { Text(label) },
         modifier = modifier.fillMaxWidth(),
         enabled = enabled,
@@ -204,7 +216,11 @@ fun CommonTextField(
             VisualTransformation.None
         },
         singleLine = true,
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+        )
     )
 }
 

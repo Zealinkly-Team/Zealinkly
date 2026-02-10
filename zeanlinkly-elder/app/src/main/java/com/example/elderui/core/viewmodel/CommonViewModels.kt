@@ -6,6 +6,7 @@ import com.example.elderui.core.api.*
 import com.example.elderui.core.repository.AuthRepository
 import com.example.elderui.core.repository.UserRepository
 import com.example.elderui.core.repository.EmergencyContactRepository
+import com.example.elderui.core.utils.ErrorMessageTranslator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -25,8 +26,10 @@ open class AuthViewModel(private val authRepository: AuthRepository) : ViewModel
             _loginState.value = LoginState.Loading
             authRepository.login(username, password).onSuccess {
                 _loginState.value = LoginState.Success(it)
-            }.onFailure {
-                _loginState.value = LoginState.Error(it.message ?: "登录失败")
+            }.onFailure { error ->
+                // 使用中文错误消息
+                val chineseErrorMessage = ErrorMessageTranslator.translateError(error)
+                _loginState.value = LoginState.Error(chineseErrorMessage)
             }
         }
     }
@@ -36,8 +39,10 @@ open class AuthViewModel(private val authRepository: AuthRepository) : ViewModel
             _registerState.value = RegisterState.Loading
             authRepository.register(username, password, realName, phone).onSuccess {
                 _registerState.value = RegisterState.Success(it)
-            }.onFailure {
-                _registerState.value = RegisterState.Error(it.message ?: "注册失败")
+            }.onFailure { error ->
+                // 使用中文错误消息
+                val chineseErrorMessage = ErrorMessageTranslator.translateError(error)
+                _registerState.value = RegisterState.Error(chineseErrorMessage)
             }
         }
     }
@@ -47,8 +52,10 @@ open class AuthViewModel(private val authRepository: AuthRepository) : ViewModel
             _loginState.value = LoginState.Loading
             authRepository.loginByCard(cardImageBase64).onSuccess {
                 _loginState.value = LoginState.Success(it)
-            }.onFailure {
-                _loginState.value = LoginState.Error(it.message ?: "卡片登录失败")
+            }.onFailure { error ->
+                // 使用中文错误消息
+                val chineseErrorMessage = ErrorMessageTranslator.translateError(error)
+                _loginState.value = LoginState.Error(chineseErrorMessage)
             }
         }
     }
