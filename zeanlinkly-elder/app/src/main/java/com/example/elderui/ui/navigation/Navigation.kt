@@ -5,7 +5,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.elderui.ui.screen.LoginScreen
-import com.example.elderui.ui.screen.RegisterScreen
 import com.example.elderui.ui.screen.HomeScreen
 
 /**
@@ -25,21 +24,6 @@ fun ElderNavigation() {
                     navController.navigate("home") {
                         popUpTo("login") { inclusive = true }
                     }
-                },
-                onNavigateToRegister = {
-                    navController.navigate("register")
-                }
-            )
-        }
-        composable("register") {
-            RegisterScreen(
-                onRegisterSuccess = {
-                    navController.navigate("home") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                },
-                onBackClick = {
-                    navController.popBackStack()
                 }
             )
         }

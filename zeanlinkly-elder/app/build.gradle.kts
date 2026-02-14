@@ -51,6 +51,8 @@ dependencies {
 
     // Network
     implementation(libs.retrofit)
+    implementation("com.google.code.gson:gson:2.10.1") // 添加 Gson 库
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // 添加 Gson 转换器
     implementation(libs.retrofit.converter.moshi)
     implementation(libs.okhttp.logging)
     implementation(libs.moshi)
@@ -63,12 +65,14 @@ dependencies {
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.android)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
 
     // Data storage
     implementation(libs.androidx.datastore)
 
     // Permissions
     implementation(libs.accompanist.permissions)
+    implementation("com.google.android.gms:play-services-location:21.2.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

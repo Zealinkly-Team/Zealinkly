@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.elderui.core.api.*
 import com.example.elderui.core.repository.ElderRepository
+import com.example.elderui.core.utils.ErrorMessageTranslator
+import com.example.elderui.core.utils.LocationProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -33,7 +35,7 @@ class TaskViewModel(private val repository: ElderRepository) : ViewModel() {
                 _tasks.value = it
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "获取任务列表失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -46,7 +48,7 @@ class TaskViewModel(private val repository: ElderRepository) : ViewModel() {
                 _currentTask.value = it
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "获取任务详情失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -59,7 +61,7 @@ class TaskViewModel(private val repository: ElderRepository) : ViewModel() {
                 _tasks.value = listOf(it) + _tasks.value
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "发布任务失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -73,7 +75,7 @@ class TaskViewModel(private val repository: ElderRepository) : ViewModel() {
                 _currentTask.value = updatedTask
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "确认任务失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -85,7 +87,7 @@ class TaskViewModel(private val repository: ElderRepository) : ViewModel() {
             repository.appealTask(taskId, content).onSuccess {
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "申诉失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -97,7 +99,10 @@ class TaskViewModel(private val repository: ElderRepository) : ViewModel() {
 }
 
 // 紧急报警ViewModel
-class EmergencyViewModel(private val repository: ElderRepository) : ViewModel() {
+class EmergencyViewModel(
+    private val repository: ElderRepository,
+    private val locationProvider: LocationProvider
+) : ViewModel() {
     private val _alert = MutableStateFlow<EmergencyAlert?>(null)
     val alert: StateFlow<EmergencyAlert?> = _alert
 
@@ -114,9 +119,25 @@ class EmergencyViewModel(private val repository: ElderRepository) : ViewModel() 
                 _alert.value = it
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "报警失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
+        }
+    }
+
+    fun triggerEmergencyWithLocation() {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val location = locationProvider.getLastKnownLocation()
+                val locationString = location?.let { "${it.latitude},${it.longitude}" }
+                triggerEmergency(locationString)
+            } catch (e: Exception) {
+                _error.value = "获取位置失败: ${e.message}"
+                triggerEmergency(null) // 即使位置失败，也继续报警
+            } finally {
+                _loading.value = false
+            }
         }
     }
 
@@ -143,7 +164,7 @@ class AgentViewModel(private val repository: ElderRepository) : ViewModel() {
                 _result.value = it
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "处理失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -156,7 +177,7 @@ class AgentViewModel(private val repository: ElderRepository) : ViewModel() {
                 _result.value = it
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "语音处理失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -185,7 +206,7 @@ class IntentViewModel(private val repository: ElderRepository) : ViewModel() {
                 _intent.value = it
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "意图识别失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -214,7 +235,7 @@ class AsrViewModel(private val repository: ElderRepository) : ViewModel() {
                 _text.value = it.text
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "语音识别失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -246,7 +267,7 @@ class PointsViewModel(private val repository: ElderRepository) : ViewModel() {
                 _total.value = it.total
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "获取积分失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -259,7 +280,7 @@ class PointsViewModel(private val repository: ElderRepository) : ViewModel() {
                 _history.value = it
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "获取积分流水失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -291,7 +312,7 @@ class NotificationViewModel(private val repository: ElderRepository) : ViewModel
                 _notifications.value = it
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "获取通知失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -302,7 +323,7 @@ class NotificationViewModel(private val repository: ElderRepository) : ViewModel
             repository.getUnreadCount().onSuccess {
                 _unreadCount.value = it.unreadCount
             }.onFailure {
-                _error.value = it.message ?: "获取未读数失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
         }
     }
@@ -314,7 +335,7 @@ class NotificationViewModel(private val repository: ElderRepository) : ViewModel
                     if (it.id == id) it.copy(isRead = true) else it
                 }
             }.onFailure {
-                _error.value = it.message ?: "标记为已读失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
         }
     }
@@ -324,7 +345,7 @@ class NotificationViewModel(private val repository: ElderRepository) : ViewModel
             repository.markAllNotificationsAsRead().onSuccess {
                 _notifications.value = _notifications.value.map { it.copy(isRead = true) }
             }.onFailure {
-                _error.value = it.message ?: "标记全部失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
         }
     }
@@ -358,7 +379,7 @@ class ChatViewModel(private val repository: ElderRepository) : ViewModel() {
                 _history.value = listOf(chatEntry) + _history.value
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "提问失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -371,7 +392,7 @@ class ChatViewModel(private val repository: ElderRepository) : ViewModel() {
                 _history.value = it
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "获取聊天历史失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -400,7 +421,7 @@ class FileViewModel(private val repository: ElderRepository) : ViewModel() {
                 _files.value = it
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "获取文件列表失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -422,7 +443,7 @@ class FileViewModel(private val repository: ElderRepository) : ViewModel() {
                 _files.value = listOf(fileInfo) + _files.value
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "上传文件失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -435,7 +456,7 @@ class FileViewModel(private val repository: ElderRepository) : ViewModel() {
                 _files.value = _files.value.filter { it.id != fileId }
                 _error.value = null
             }.onFailure {
-                _error.value = it.message ?: "删除文件失败"
+                _error.value = ErrorMessageTranslator.translateError(it)
             }
             _loading.value = false
         }
@@ -445,4 +466,3 @@ class FileViewModel(private val repository: ElderRepository) : ViewModel() {
         _error.value = null
     }
 }
-

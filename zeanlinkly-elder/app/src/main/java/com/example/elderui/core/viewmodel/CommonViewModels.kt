@@ -7,6 +7,8 @@ import com.example.elderui.core.repository.AuthRepository
 import com.example.elderui.core.repository.UserRepository
 import com.example.elderui.core.repository.EmergencyContactRepository
 import com.example.elderui.core.utils.ErrorMessageTranslator
+import com.example.elderui.core.utils.LoginMethod
+import com.example.elderui.core.utils.UserPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -14,18 +16,53 @@ import kotlinx.coroutines.launch
 /**
  * 认证ViewModel - 三端共用基类
  */
-open class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
+open class AuthViewModel(
+    private val authRepository: AuthRepository,
+    private val userPreferences: UserPreferences? = null // 可选，保持构造函数兼容性，或者强制
+) : ViewModel() {
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
 
-    private val _registerState = MutableStateFlow<RegisterState>(RegisterState.Idle)
-    val registerState: StateFlow<RegisterState> = _registerState
+    private val _loginMethod = MutableStateFlow(LoginMethod.ACCOUNT)
+    val loginMethod: StateFlow<LoginMethod> = _loginMethod
+
+    init {
+        // 读取默认登录方式
+        checkDefaultLoginMethod()
+    }
+
+    private fun checkDefaultLoginMethod() {
+        userPreferences?.let { prefs ->
+            viewModelScope.launch {
+                prefs.loginMethod.collect { method ->
+                    _loginMethod.value = method
+                }
+            }
+        }
+    }
+
+    fun setLoginMethod(method: LoginMethod) {
+        _loginMethod.value = method
+    }
+
+    fun saveDefaultLoginMethod(method: LoginMethod) {
+        userPreferences?.let { prefs ->
+            viewModelScope.launch {
+                prefs.saveLoginMethod(method)
+            }
+        }
+    }
+
 
     fun login(username: String, password: String) {
         viewModelScope.launch {
             _loginState.value = LoginState.Loading
             authRepository.login(username, password).onSuccess {
                 _loginState.value = LoginState.Success(it)
+                // 如果是账号密码登录成功，且当前设为默认，则保存
+                if (_loginMethod.value == LoginMethod.ACCOUNT) {
+                    saveDefaultLoginMethod(LoginMethod.ACCOUNT)
+                }
             }.onFailure { error ->
                 // 使用中文错误消息
                 val chineseErrorMessage = ErrorMessageTranslator.translateError(error)
@@ -34,24 +71,14 @@ open class AuthViewModel(private val authRepository: AuthRepository) : ViewModel
         }
     }
 
-    fun register(username: String, password: String, realName: String, phone: String) {
-        viewModelScope.launch {
-            _registerState.value = RegisterState.Loading
-            authRepository.register(username, password, realName, phone).onSuccess {
-                _registerState.value = RegisterState.Success(it)
-            }.onFailure { error ->
-                // 使用中文错误消息
-                val chineseErrorMessage = ErrorMessageTranslator.translateError(error)
-                _registerState.value = RegisterState.Error(chineseErrorMessage)
-            }
-        }
-    }
 
     fun loginByCard(cardImageBase64: String) {
         viewModelScope.launch {
             _loginState.value = LoginState.Loading
             authRepository.loginByCard(cardImageBase64).onSuccess {
                 _loginState.value = LoginState.Success(it)
+                // 登录成功，保存为默认登录方式（如果是卡片登录模式）
+                saveDefaultLoginMethod(LoginMethod.CARD)
             }.onFailure { error ->
                 // 使用中文错误消息
                 val chineseErrorMessage = ErrorMessageTranslator.translateError(error)
@@ -75,12 +102,6 @@ sealed class LoginState {
     data class Error(val message: String) : LoginState()
 }
 
-sealed class RegisterState {
-    object Idle : RegisterState()
-    object Loading : RegisterState()
-    data class Success(val data: RegisterResponse) : RegisterState()
-    data class Error(val message: String) : RegisterState()
-}
 
 /**
  * 用户ViewModel - 三端共用基类

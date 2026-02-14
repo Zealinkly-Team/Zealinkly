@@ -8,6 +8,6 @@
     </domain-config>
 
     <!-- 其他所有域名默认使用 HTTPS -->
-    <default-config cleartextTrafficPermitted="false" />
+    <base-config cleartextTrafficPermitted="false" />
 </network-security-config>
 

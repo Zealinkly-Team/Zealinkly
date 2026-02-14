@@ -19,22 +19,22 @@ zeanlinkly-elder/
 │   │   │   ├── AndroidManifest.xml
 │   │   │   ├── java/com/example/elderui/
 │   │   │   │   ├── core/
-│   │   │   │   │   ├── api/              # API 接口和数据模型（三端共用）
+│   │   │   │   │   ├── api/              # API 接口和数据模型
 │   │   │   │   │   │   ├── ApiClient.kt       # API 客户端工厂
 │   │   │   │   │   │   ├── ApiService.kt      # API 接口定义
 │   │   │   │   │   │   ├── ElderModels.kt     # 老人端特定模型
 │   │   │   │   │   │   ├── Models.kt          # 共用数据模型
 │   │   │   │   │   │   └── Response.kt        # 统一响应格式
-│   │   │   │   │   ├── repository/      # 仓储层（三端共用基类）
+│   │   │   │   │   ├── repository/      # 仓储层
 │   │   │   │   │   │   ├── CommonRepositories.kt
 │   │   │   │   │   │   └── ElderRepository.kt
 │   │   │   │   │   ├── viewmodel/       # ViewModel 层
 │   │   │   │   │   │   ├── CommonViewModels.kt
 │   │   │   │   │   │   └── ElderViewModels.kt
-│   │   │   │   │   └── utils/           # 工具类（三端共用）
+│   │   │   │   │   └── utils/           # 工具类
 │   │   │   │   │       └── Utils.kt
 │   │   │   │   ├── ui/
-│   │   │   │   │   ├── component/       # UI 组件（三端共用）
+│   │   │   │   │   ├── component/       # UI 组件
 │   │   │   │   │   │   └── CommonComponents.kt
 │   │   │   │   │   ├── navigation/      # 导航
 │   │   │   │   │   │   └── Navigation.kt
@@ -73,6 +73,7 @@ zeanlinkly-elder/
 - **导航**: Jetpack Navigation Compose
 - **图片加载**: Coil
 
+<!-- 
 ## 三端共用代码说明
 
 ### 1. 数据模型层 (`core/api`)
@@ -145,6 +146,7 @@ zeanlinkly-elder/
 - 统一的 Token 存储机制
 - 自动的认证 Header 注入
 - 支持 DataStore 永久化存储
+-->
 
 ## 功能模块
 
@@ -199,6 +201,7 @@ datastore = "1.0.0"
 accompanist = "0.33.2"
 ```
 
+<!--
 ## 如何使用共用代码
 
 ### 对于志愿者端和管理员端开发者
@@ -229,6 +232,7 @@ accompanist = "0.33.2"
    val userApi = retrofit.create(UserApi::class.java)
    val emergencyContactApi = retrofit.create(EmergencyContactApi::class.java)
    ```
+-->
 
 ## API 文档
 
@@ -243,6 +247,7 @@ accompanist = "0.33.2"
 - `POST /api/agent/process` - Agent 处理文本
 - `POST /api/asr/recognize` - 语音识别
 
+<!--
 ## 开发建议
 
 1. **为三端共用代码编写单元测试**
@@ -250,6 +255,7 @@ accompanist = "0.33.2"
 3. **保持 API 接口定义的一致性**
 4. **统一的错误处理机制**
 5. **定期同步各端的共用代码更新**
+-->
 
 ## 构建和运行
 
@@ -275,4 +281,3 @@ accompanist = "0.33.2"
 ## 联系方式
 
 项目组：智链邻里开发团队
-

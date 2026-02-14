@@ -6,6 +6,8 @@ import com.example.elderui.core.repository.AuthRepository
 import com.example.elderui.core.repository.ElderRepository
 import com.example.elderui.core.repository.EmergencyContactRepository
 import com.example.elderui.core.repository.UserRepository
+import com.example.elderui.core.utils.LocationProvider
+import com.example.elderui.core.utils.UserPreferences
 
 class AppContainer(context: Context) {
     companion object {
@@ -25,6 +27,9 @@ class AppContainer(context: Context) {
 //         const val BASE_URL = "https://43.143.226.28:8080"  // 远程服务器
     }
 
+    val locationProvider = LocationProvider(context)
+    val userPreferences = UserPreferences(context)
+
     private val apiClientFactory = ApiClientFactory(context)
     private val retrofit = apiClientFactory.createRetrofit(BASE_URL)
 
@@ -38,4 +43,3 @@ class AppContainer(context: Context) {
     val emergencyContactRepository = EmergencyContactRepository(emergencyContactApi)
     val elderRepository = ElderRepository(elderApi)
 }
-

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Zealinkly.iml" filepath="$PROJECT_DIR$/.idea/Zealinkly.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zealinkly-backend/zealinkly-backend/src/main/main.iml" filepath="$PROJECT_DIR$/zealinkly-backend/zealinkly-backend/src/main/main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/zealinkly-backend/zealinkly-backend/src/test/test.iml" filepath="$PROJECT_DIR$/zealinkly-backend/zealinkly-backend/src/test/test.iml" />
+    </modules>
+  </component>
+</project>

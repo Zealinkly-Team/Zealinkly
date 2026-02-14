@@ -35,7 +35,7 @@ class AuthRepository(
     }
 
     suspend fun loginByCard(cardImageBase64: String): Result<LoginResponse> = try {
-        val response = authApi.loginByCard(CardLoginRequest(cardImageBase64))
+        val response = authApi.loginByCard(CardLoginRequest(imageBase64 = cardImageBase64))
         if (response.code == 200 && response.data != null) {
             tokenStore.saveToken(response.data.token, response.data.userId.toString(), response.data.userType)
             Result.success(response.data)

@@ -9,7 +9,7 @@ class AppViewModelFactory(private val container: AppContainer) : ViewModelProvid
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return when {
             modelClass.isAssignableFrom(AuthViewModel::class.java) ->
-                AuthViewModel(container.authRepository)
+                AuthViewModel(container.authRepository, container.userPreferences)
             modelClass.isAssignableFrom(UserViewModel::class.java) ->
                 UserViewModel(container.userRepository)
             modelClass.isAssignableFrom(EmergencyContactViewModel::class.java) ->
@@ -17,7 +17,7 @@ class AppViewModelFactory(private val container: AppContainer) : ViewModelProvid
             modelClass.isAssignableFrom(TaskViewModel::class.java) ->
                 TaskViewModel(container.elderRepository)
             modelClass.isAssignableFrom(EmergencyViewModel::class.java) ->
-                EmergencyViewModel(container.elderRepository)
+                EmergencyViewModel(container.elderRepository, container.locationProvider)
             modelClass.isAssignableFrom(AgentViewModel::class.java) ->
                 AgentViewModel(container.elderRepository)
             modelClass.isAssignableFrom(IntentViewModel::class.java) ->

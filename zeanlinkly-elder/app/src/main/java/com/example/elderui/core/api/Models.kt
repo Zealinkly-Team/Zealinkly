@@ -1,6 +1,7 @@
 package com.example.elderui.core.api
 
 import com.squareup.moshi.JsonClass
+import com.squareup.moshi.Json
 import java.time.LocalDateTime
 
 /**
@@ -39,7 +40,7 @@ data class RegisterResponse(
 
 @JsonClass(generateAdapter = true)
 data class CardLoginRequest(
-    val cardImageBase64: String,
+    @Json(name = "imageBase64") val imageBase64: String,
     val userType: String = "elder"  // 老人端默认为 elder
 )
 
@@ -83,4 +84,3 @@ data class CreateEmergencyContactRequest(
     val phone: String,
     val priority: Int
 )
-
