@@ -291,13 +291,13 @@ fun WelcomeCard() {
             // 优化：只在用户信息加载完成后才显示名字，避免闪烁
             if (userInfo?.realName != null) {
                 Text(
-                    text = "欢迎，${userInfo?.realName}",
+                    text = "你好，${userInfo?.realName}",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
             } else {
                 Text(
-                    text = "欢迎",
+                    text = "你好",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
