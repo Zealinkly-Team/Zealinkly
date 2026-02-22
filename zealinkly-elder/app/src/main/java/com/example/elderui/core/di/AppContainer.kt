@@ -17,14 +17,12 @@ class AppContainer(context: Context) {
         // 局域网其他设备 → http://192.168.1.x:8080（根据实际IP修改）
         // 远程服务器 → http://api.example.com
 
-        // 当前配置：Android 模拟器模式
-        // 如需修改，在下面选择合适的地址并取消注释
+        // 当前配置：生产环境（已部署到服务器）
+        const val BASE_URL = "http://43.143.226.28:8080"
 
-        const val BASE_URL = "http://10.0.2.2:8080"  // ✅ 模拟器连接本机
-
+        // const val BASE_URL = "http://10.0.2.2:8080"  // 模拟器连接本机
         // const val BASE_URL = "http://localhost:8080"  // 本地开发电脑
         // const val BASE_URL = "http://192.168.1.100:8080"  // 局域网（改为你的电脑IP）
-//         const val BASE_URL = "https://43.143.226.28:8080"  // 远程服务器
     }
 
     val locationProvider = LocationProvider(context)

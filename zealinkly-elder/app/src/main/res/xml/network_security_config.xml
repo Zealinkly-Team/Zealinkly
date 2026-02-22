@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-    <!-- 允许 10.0.2.2 (虚拟机 host 映射) 的 cleartext 通信，用于开发 -->
+    <!-- 允许 HTTP 通信的域名（开发 + 生产服务器） -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">10.0.2.2</domain>
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">127.0.0.1</domain>
+        <domain includeSubdomains="true">43.143.226.28</domain>
     </domain-config>
 
     <!-- 其他所有域名默认使用 HTTPS -->

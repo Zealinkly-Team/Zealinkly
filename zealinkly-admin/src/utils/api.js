@@ -1,8 +1,12 @@
 import axios from 'axios'
 import { ElMessage, ElLoading } from 'element-plus'
 
+// API 服务器地址
+export const API_BASE_URL = 'http://43.143.226.28:8080'
+
 // 创建axios实例
 export const api = axios.create({
+    baseURL: API_BASE_URL,
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json'

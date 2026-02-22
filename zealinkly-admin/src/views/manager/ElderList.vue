@@ -94,7 +94,7 @@
     >
       <el-upload
         class="upload-demo"
-        action="http://localhost:8080/api/admin/elders/bulk-import"
+        :action="`${API_BASE_URL}/api/admin/elders/bulk-import`"
         :headers="{ 'Authorization': `Bearer ${localStorage.getItem('token')}` }"
         :on-success="handleImportSuccess"
         :on-error="handleImportError"
@@ -124,7 +124,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { elderAPI } from '@/utils/api'
+import { elderAPI, API_BASE_URL } from '@/utils/api'
 
 const router = useRouter()
 const loading = ref(false)

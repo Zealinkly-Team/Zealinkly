@@ -2,8 +2,8 @@ package com.example.zealinkly_volunteer.utils;
 
 public class Constants {
     // API基础URL
-    // 开发环境: http://localhost:8080 (Android设备使用局域网IP)
-    public static final String BASE_URL = "http://192.168.31.48:8080";
+    // 生产环境: 已部署到服务器
+    public static final String BASE_URL = "http://43.143.226.28:8080";
     
     // API端点
     public static final String API_LOGIN = "/api/auth/login";
