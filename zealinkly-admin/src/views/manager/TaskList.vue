@@ -210,30 +210,42 @@ const getActionText = (status) => {
 const handleTaskAction = async (task) => {
   try {
     let successMessage
+    let apiUrl
+    let updatedStatus
     
     switch (task.status) {
       case 'PENDING':
-        // 分配任务 - 这里简化处理，实际应该弹出分配对话框
-        ElMessage.info('任务分配功能开发中')
-        return
+        // 分配任务 - 这里简化处理，直接将任务状态改为已接单
+        updatedStatus = 'CLAIMED'
+        successMessage = '任务已分配'
+        break
       case 'CLAIMED':
         // 开始任务
-        await api.patch(`/api/admin/tasks/${task.id}/start`)
+        updatedStatus = 'IN_PROGRESS'
         successMessage = '任务已开始'
         break
       case 'IN_PROGRESS':
         // 完成任务
-        await api.patch(`/api/admin/tasks/${task.id}/complete`)
+        updatedStatus = 'COMPLETED'
         successMessage = '任务已完成'
         break
       default:
         return
     }
     
+    // 使用 update API 更新任务状态
+    apiUrl = `/api/admin/tasks/${task.id}`
+    console.log('更新任务状态请求:', apiUrl, { status: updatedStatus })
+    const updateResponse = await api.put(apiUrl, { status: updatedStatus })
+    console.log('更新任务状态响应:', updateResponse)
+    
     ElMessage.success(successMessage)
     getTasks()
   } catch (error) {
-    // 错误已在API拦截器中处理
+    console.error('任务操作失败:', error)
+    console.error('错误详情:', error.response)
+    console.error('错误配置:', error.config)
+    ElMessage.error(`任务操作失败: ${error.response?.data?.message || '服务器内部错误'}`)
   }
 }
 

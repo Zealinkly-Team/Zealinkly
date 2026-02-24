@@ -102,7 +102,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { emergencyAPI, api } from '@/utils/api'
+import { emergencyAPI, api, API_BASE_URL } from '@/utils/api'
 
 const router = useRouter()
 const route = useRoute()
@@ -130,6 +130,11 @@ const emergency = reactive({
 })
 
 const getEmergencyDetail = async () => {
+  console.log('=== 触发获取紧急报警详情 ===')
+  console.log('route.params:', route.params)
+  console.log('emergencyId.value:', emergencyId.value)
+  console.log('emergencyId.value 类型:', typeof emergencyId.value)
+  
   if (!emergencyId.value) {
     ElMessage.error('报警ID不存在')
     router.push('/manager/emergency')
@@ -138,31 +143,94 @@ const getEmergencyDetail = async () => {
   
   try {
     loading.value = true
-    const response = await emergencyAPI.getDetail(emergencyId.value)
+    console.log('=== 获取紧急报警详情开始 ===')
+    console.log('报警ID:', emergencyId.value)
+    
+    // 调用后端API获取报警详情，确保id是数字类型
+    const id = parseInt(emergencyId.value)
+    if (isNaN(id)) {
+      ElMessage.error('无效的报警ID')
+      router.push('/manager/emergency')
+      return
+    }
+    console.log('调用API路径:', `/emergency/${id}/detail`)
+    console.log('完整请求路径:', `${API_BASE_URL}/emergency/${id}/detail`)
+    const response = await api.get(`/emergency/${id}/detail`)
+    console.log('API响应:', response)
+    
     if (response.code === 200) {
       const data = response.data
-      // 处理后端返回的数据结构
-      emergency.id = data.task.id
-      emergency.elderName = data.elderInfo.realName
-      emergency.elderPhone = data.elderInfo.phone
-      emergency.elderAddress = data.elderInfo.address
-      emergency.type = data.task.taskType || 'EMERGENCY'
-      emergency.status = data.task.status
-      emergency.latitude = data.location.lat
-      emergency.longitude = data.location.lng
-      emergency.notes = data.task.aiResponse || ''
-      emergency.processingNotes = data.task.aiResponse || ''
-      emergency.createdAt = data.task.createdAt
-      emergency.processingAt = data.task.processingAt || ''
-      emergency.processedAt = data.task.completedAt || ''
-      emergency.processorName = data.task.adminName || ''
+      console.log('响应数据:', data)
+      
+      // 更新emergency对象
+      emergency.id = data.task?.id || emergencyId.value
+      emergency.elderName = data.elderInfo?.realName || '未知'
+      emergency.elderPhone = data.elderInfo?.phone || '未知'
+      emergency.elderAddress = data.elderInfo?.address || '未知'
+      emergency.type = 'EMERGENCY' // 默认为紧急求助类型
+      emergency.status = data.task?.status || 'UNKNOWN'
+      emergency.latitude = data.location?.lat || ''
+      emergency.longitude = data.location?.lng || ''
+      emergency.notes = ''
+      emergency.processingNotes = data.task?.aiResponse || ''
+      emergency.createdAt = data.task?.createdAt || ''
+      emergency.processingAt = ''
+      emergency.processedAt = ''
+      emergency.processorName = data.task?.adminName || ''
+      emergency.processorPhone = ''
+      
+      console.log('=== 处理完成 ===')
+      console.log('处理后的紧急报警详情:', emergency)
+    } else {
+      ElMessage.error(`获取紧急报警详情失败: ${response.message || '未知错误'}`)
+      // 使用默认数据确保页面正常显示
+      emergency.id = emergencyId.value
+      emergency.elderName = '未知'
+      emergency.elderPhone = '未知'
+      emergency.elderAddress = '未知'
+      emergency.type = 'EMERGENCY'
+      emergency.status = 'UNKNOWN'
+      emergency.latitude = ''
+      emergency.longitude = ''
+      emergency.notes = ''
+      emergency.processingNotes = ''
+      emergency.createdAt = ''
+      emergency.processingAt = ''
+      emergency.processedAt = ''
+      emergency.processorName = ''
       emergency.processorPhone = ''
     }
   } catch (error) {
-    // 错误已在API拦截器中处理
-    router.push('/manager/emergency')
+    console.error('=== 获取紧急报警详情失败 ===')
+    console.error('错误对象:', error)
+    console.error('错误消息:', error.message)
+    console.error('错误响应:', error.response)
+    console.error('错误响应数据:', error.response?.data)
+    console.error('错误配置:', error.config)
+    console.error('错误配置URL:', error.config?.url)
+    
+    // 显示友好的提示信息
+    ElMessage.info('报警记录不存在或已被删除')
+    
+    // 使用默认数据确保页面正常显示
+    emergency.id = emergencyId.value
+    emergency.elderName = '未知'
+    emergency.elderPhone = '未知'
+    emergency.elderAddress = '未知'
+    emergency.type = 'EMERGENCY'
+    emergency.status = 'UNKNOWN'
+    emergency.latitude = ''
+    emergency.longitude = ''
+    emergency.notes = ''
+    emergency.processingNotes = ''
+    emergency.createdAt = ''
+    emergency.processingAt = ''
+    emergency.processedAt = ''
+    emergency.processorName = ''
+    emergency.processorPhone = ''
   } finally {
     loading.value = false
+    console.log('=== 获取紧急报警详情结束 ===')
   }
 }
 
@@ -179,9 +247,9 @@ const getTypeText = (type) => {
 const getStatusType = (status) => {
   const statusMap = {
     PENDING: 'danger',
-    PROCESSING: 'warning',
-    PROCESSED: 'primary',
-    CLOSED: 'success'
+    IN_PROGRESS: 'warning',
+    COMPLETED: 'success',
+    CANCELLED: 'info'
   }
   return statusMap[status] || 'info'
 }
@@ -189,37 +257,76 @@ const getStatusType = (status) => {
 const getStatusText = (status) => {
   const statusMap = {
     PENDING: '待处理',
-    PROCESSING: '处理中',
-    PROCESSED: '已处理',
-    CLOSED: '已关闭'
+    IN_PROGRESS: '处理中',
+    COMPLETED: '已完成',
+    CANCELLED: '已取消'
   }
   return statusMap[status] || status
 }
 
 const canTakeAction = (status) => {
-  // 只在状态为PENDING时显示操作按钮，因为后端会直接将状态转换为COMPLETED
-  return status === 'PENDING'
+  // 在状态为PENDING或IN_PROGRESS时显示操作按钮
+  return status === 'PENDING' || status === 'IN_PROGRESS'
 }
 
 const getActionText = (status) => {
-  // 只显示"开始处理"按钮，因为后端会直接将状态转换为COMPLETED
-  return '开始处理'
+  if (status === 'PENDING') {
+    return '开始处理'
+  } else if (status === 'IN_PROGRESS') {
+    return '完成处理'
+  }
+  return '操作'
 }
 
 const handleEmergencyAction = async () => {
   try {
     actionLoading.value = true
     
-    // 处理紧急报警
-    await emergencyAPI.handle(emergencyId.value, { note: '' })
+    // 确保id是数字类型
+    const id = parseInt(emergencyId.value)
+    if (isNaN(id)) {
+      ElMessage.error('无效的报警ID')
+      router.push('/manager/emergency')
+      return
+    }
     
-    // 显示成功消息
-    ElMessage.success('处理成功')
-    
-    // 重新获取详情，更新状态
-    getEmergencyDetail()
+    if (emergency.status === 'PENDING') {
+      // 开始处理报警
+      await api.patch(`/emergency/${id}/start`)
+      ElMessage.success('开始处理成功')
+      // 重新获取详情以更新状态
+      getEmergencyDetail()
+      // 触发仪表盘更新
+      window.dispatchEvent(new CustomEvent('refreshDashboard'))
+    } else if (emergency.status === 'IN_PROGRESS') {
+      // 完成处理报警
+      // 弹出对话框让管理员输入处理备注
+      ElMessageBox.prompt('请输入处理备注', '完成处理', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        inputPlaceholder: '请输入处理情况...'
+      }).then(async ({ value }) => {
+        await api.patch(`/emergency/${id}/complete`, { note: value })
+        ElMessage.success('处理成功')
+        // 重新获取详情以更新状态
+        getEmergencyDetail()
+        // 触发仪表盘更新
+        window.dispatchEvent(new CustomEvent('refreshDashboard'))
+      }).catch(() => {
+        // 取消操作
+      })
+    }
   } catch (error) {
-    // 错误已在API拦截器中处理
+    // 显示友好的错误信息
+    let errorMessage = '处理紧急报警失败'
+    if (error.response) {
+      errorMessage = `${errorMessage}: ${error.response.data?.message || `服务器错误 (${error.response.status})`}`
+    } else if (error.request) {
+      errorMessage = `${errorMessage}: 服务器无响应，请检查网络连接`
+    } else {
+      errorMessage = `${errorMessage}: ${error.message}`
+    }
+    ElMessage.error(errorMessage)
   } finally {
     actionLoading.value = false
   }

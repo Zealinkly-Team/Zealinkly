@@ -282,8 +282,29 @@ const handleImportError = () => {
 }
 
 const exportTemplate = () => {
-  // 实际项目中应该提供模板下载链接
-  ElMessage.info('模板下载功能开发中')
+  // 生成CSV格式的模板文件
+  const headers = ['用户名', '密码', '真实姓名', '手机号', '地址', '身份证号', '社区卡号', '纬度', '经度']
+  const csvContent = headers.join(',') + '\n'
+  
+  // 创建Blob对象
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  
+  // 创建下载链接
+  const link = document.createElement('a')
+  link.setAttribute('href', url)
+  link.setAttribute('download', '老人模板.csv')
+  link.style.visibility = 'hidden'
+  document.body.appendChild(link)
+  
+  // 触发下载
+  link.click()
+  
+  // 清理
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
+  
+  ElMessage.success('模板导出成功')
 }
 
 onMounted(() => {

@@ -2,7 +2,7 @@ import axios from 'axios'
 import { ElMessage, ElLoading } from 'element-plus'
 
 // API 服务器地址
-export const API_BASE_URL = 'http://43.143.226.28:8080'
+export const API_BASE_URL = '/api'
 
 // 创建axios实例
 export const api = axios.create({
@@ -76,146 +76,148 @@ api.interceptors.response.use(
 // 导出API方法
 export const authAPI = {
     // 登录
-    login: (data) => api.post('/api/auth/login', data),
+    login: (data) => api.post('/auth/login', data),
     // 注册
-    register: (data) => api.post('/api/auth/register/admin', data)
+    register: (data) => api.post('/auth/register/admin', data)
 }
 
 export const elderAPI = {
     // 获取老人列表
-    getList: (params) => api.get('/api/admin/elders', { params }),
+    getList: (params) => api.get('/admin/elders', { params }),
     // 获取老人详情
-    getDetail: (id) => api.get(`/api/admin/elders/${id}`),
+    getDetail: (id) => api.get(`/admin/elders/${id}`),
     // 创建老人
-    create: (data) => api.post('/api/admin/elders', data),
+    create: (data) => api.post('/admin/elders', data),
     // 更新老人
-    update: (id, data) => api.put(`/api/admin/elders/${id}`, data),
+    update: (id, data) => api.put(`/admin/elders/${id}`, data),
     // 删除老人
-    delete: (id) => api.delete(`/api/admin/elders/${id}`),
+    delete: (id) => api.delete(`/admin/elders/${id}`),
     // 批量删除老人
-    bulkDelete: (ids) => api.post('/api/admin/elders/bulk-delete', ids),
+    bulkDelete: (ids) => api.post('/admin/elders/bulk-delete', ids),
     // 批量导入老人
-    bulkImport: (formData) => api.post('/api/admin/elders/bulk-import', formData, {
+    bulkImport: (formData) => api.post('/admin/elders/bulk-import', formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
     }),
     // 启用老人
-    enable: (id) => api.patch(`/api/admin/elders/${id}/enable`),
+    enable: (id) => api.patch(`/admin/elders/${id}/enable`),
     // 禁用老人
-    disable: (id) => api.patch(`/api/admin/elders/${id}/disable`),
+    disable: (id) => api.patch(`/admin/elders/${id}/disable`),
     // 发放积分
-    grantPoints: (id, data) => api.post(`/api/admin/elders/${id}/grant-points`, data)
+    grantPoints: (id, data) => api.post(`/admin/elders/${id}/grant-points`, data)
 }
 
 export const volunteerAPI = {
     // 获取志愿者列表
-    getList: (params) => api.get('/api/admin/volunteers', { params }),
+    getList: (params) => api.get('/admin/volunteers', { params }),
     // 获取志愿者详情
-    getDetail: (id) => api.get(`/api/admin/volunteers/${id}`),
+    getDetail: (id) => api.get(`/admin/volunteers/${id}`),
     // 创建志愿者
-    create: (data) => api.post('/api/admin/volunteers', data),
+    create: (data) => api.post('/admin/volunteers', data),
     // 更新志愿者
-    update: (id, data) => api.put(`/api/admin/volunteers/${id}`, data),
+    update: (id, data) => api.put(`/admin/volunteers/${id}`, data),
     // 删除志愿者
-    delete: (id) => api.delete(`/api/admin/volunteers/${id}`),
+    delete: (id) => api.delete(`/admin/volunteers/${id}`),
     // 批量删除志愿者
-    bulkDelete: (ids) => api.post('/api/admin/volunteers/bulk-delete', ids),
+    bulkDelete: (ids) => api.post('/admin/volunteers/bulk-delete', ids),
     // 批量导入志愿者
-    bulkImport: (formData) => api.post('/api/admin/volunteers/bulk-import', formData, {
+    bulkImport: (formData) => api.post('/admin/volunteers/bulk-import', formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
     }),
     // 启用志愿者
-    enable: (id) => api.patch(`/api/admin/volunteers/${id}/enable`),
+    enable: (id) => api.patch(`/admin/volunteers/${id}/enable`),
     // 禁用志愿者
-    disable: (id) => api.patch(`/api/admin/volunteers/${id}/disable`),
+    disable: (id) => api.patch(`/admin/volunteers/${id}/disable`),
     // 发放积分
-    grantPoints: (id, data) => api.post(`/api/admin/volunteers/${id}/grant-points`, data)
+    grantPoints: (id, data) => api.post(`/admin/volunteers/${id}/grant-points`, data)
 }
 
 export const taskAPI = {
     // 获取任务列表
-    getList: (params) => api.get('/api/admin/tasks', { params }),
+    getList: (params) => api.get('/admin/tasks', { params }),
     // 获取任务详情
-    getDetail: (id) => api.get(`/api/admin/tasks/${id}`),
+    getDetail: (id) => api.get(`/admin/tasks/${id}`),
     // 更新任务
-    update: (id, data) => api.put(`/api/admin/tasks/${id}`, data)
+    update: (id, data) => api.put(`/admin/tasks/${id}`, data)
 }
 
 export const emergencyAPI = {
     // 获取待处理报警列表
-    getPendingList: () => api.get('/api/emergency/pending'),
+    getPendingList: () => api.get('/emergency/pending'),
     // 获取紧急报警详情
-    getDetail: (id) => api.get(`/api/emergency/${id}/detail`),
-    // 处理紧急报警
-    handle: (id, data) => api.patch(`/api/emergency/${id}/handle`, data)
+    getDetail: (id) => api.get(`/emergency/${id}/detail`),
+    // 开始处理紧急报警
+    start: (id) => api.patch(`/emergency/${id}/start`),
+    // 完成处理紧急报警
+    complete: (id, data) => api.patch(`/emergency/${id}/complete`, data)
 }
 
 export const productAPI = {
     // 获取商品列表
-    getList: (params) => api.get('/api/admin/products', { params }),
+    getList: (params) => api.get('/admin/products', { params }),
     // 获取已启用商品列表
-    getEnabledList: (params) => api.get('/api/admin/products/enabled', { params }),
+    getEnabledList: (params) => api.get('/admin/products/enabled', { params }),
     // 获取商品详情
-    getDetail: (id) => api.get(`/api/admin/products/${id}`),
+    getDetail: (id) => api.get(`/admin/products/${id}`),
     // 创建商品
-    create: (data) => api.post('/api/admin/products', data),
+    create: (data) => api.post('/admin/products', data),
     // 更新商品
-    update: (id, data) => api.put(`/api/admin/products/${id}`, data),
+    update: (id, data) => api.put(`/admin/products/${id}`, data),
     // 删除商品
-    delete: (id) => api.delete(`/api/admin/products/${id}`)
+    delete: (id) => api.delete(`/admin/products/${id}`)
 }
 
 export const exchangeAPI = {
     // 兑换商品
-    exchange: (data) => api.post('/api/admin/exchanges/exchange', data),
+    exchange: (data) => api.post('/admin/exchanges/exchange', data),
     // 获取兑换记录列表
-    getList: (params) => api.get('/api/admin/exchanges', { params }),
+    getList: (params) => api.get('/admin/exchanges', { params }),
     // 获取兑换记录详情
-    getDetail: (id) => api.get(`/api/admin/exchanges/${id}`),
+    getDetail: (id) => api.get(`/admin/exchanges/${id}`),
     // 扫描卡片
-    scanCard: (data) => api.post('/api/admin/exchanges/scan-card', data)
+    scanCard: (data) => api.post('/admin/exchanges/scan-card', data)
 }
 
 export const appealAPI = {
     // 获取申诉列表
-    getList: (params) => api.get('/api/admin/appeals', { params }),
+    getList: (params) => api.get('/admin/appeals', { params }),
     // 获取待处理申诉列表
-    getPendingList: () => api.get('/api/admin/appeals/pending'),
+    getPendingList: () => api.get('/admin/appeals/pending'),
     // 获取申诉详情
-    getDetail: (id) => api.get(`/api/admin/appeals/${id}`),
+    getDetail: (id) => api.get(`/admin/appeals/${id}`),
     // 处理申诉
-    resolve: (id, data) => api.patch(`/api/admin/appeals/${id}/resolve`, data)
+    resolve: (id, data) => api.patch(`/admin/appeals/${id}/resolve`, data)
 }
 
 export const notificationAPI = {
     // 广播通知
-    broadcast: (data) => api.post('/api/admin/notifications/broadcast', data)
+    broadcast: (data) => api.post('/admin/notifications/broadcast', data)
 }
 
 export const emergencyContactAPI = {
     // 添加紧急联系人
-    add: (elderId, data) => api.post(`/api/admin/elders/${elderId}/emergency-contacts`, data),
+    add: (elderId, data) => api.post(`/admin/elders/${elderId}/emergency-contacts`, data),
     // 获取紧急联系人列表
-    getList: (elderId) => api.get(`/api/admin/elders/${elderId}/emergency-contacts`),
+    getList: (elderId) => api.get(`/admin/elders/${elderId}/emergency-contacts`),
     // 更新紧急联系人
-    update: (elderId, contactId, data) => api.put(`/api/admin/elders/${elderId}/emergency-contacts/${contactId}`, data),
+    update: (elderId, contactId, data) => api.put(`/admin/elders/${elderId}/emergency-contacts/${contactId}`, data),
     // 删除紧急联系人
-    delete: (elderId, contactId) => api.delete(`/api/admin/elders/${elderId}/emergency-contacts/${contactId}`)
+    delete: (elderId, contactId) => api.delete(`/admin/elders/${elderId}/emergency-contacts/${contactId}`)
 }
 
 export const pointsAPI = {
     // 获取用户积分总数
-    getTotal: (userType, userId) => api.get(`/api/admin/points/users/${userType}/${userId}/total`),
+    getTotal: (userType, userId) => api.get(`/admin/points/users/${userType}/${userId}/total`),
     // 获取用户积分流水
-    getHistory: (userType, userId, params) => api.get(`/api/admin/points/users/${userType}/${userId}/history`, { params })
+    getHistory: (userType, userId, params) => api.get(`/admin/points/users/${userType}/${userId}/history`, { params })
 }
 
 export const ocrAPI = {
     // 识别卡片号码
-    recognize: (data) => api.post('/api/admin/ocr/recognize', data)
+    recognize: (data) => api.post('/admin/ocr/recognize', data)
 }
 
 // 默认导出，保持向后兼容

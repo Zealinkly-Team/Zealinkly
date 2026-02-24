@@ -135,12 +135,30 @@ const getAppealDetail = async () => {
     
     const data = await response.json()
     if (data.code === 200) {
-      Object.assign(appeal, data.data)
+      console.log('申诉详情数据:', data.data)
+      // 确保所有必要字段都存在，即使后端没有返回
+      const appealData = {
+        id: data.data.id || '',
+        appellantName: data.data.appellantName || '',
+        appellantType: data.data.appellantType || '',
+        appellantPhone: data.data.appellantPhone || '',
+        type: data.data.type || '',
+        title: data.data.title || '',
+        content: data.data.content || '',
+        status: data.data.status || '',
+        processingResult: data.data.processingResult || '',
+        createdAt: data.data.createdAt || '',
+        processingAt: data.data.processingAt || '',
+        resolvedAt: data.data.resolvedAt || '',
+        processorName: data.data.processorName || ''
+      }
+      Object.assign(appeal, appealData)
     } else {
       ElMessage.error(data.message || '获取申诉信息失败')
       router.push('/manager/appeals')
     }
   } catch (error) {
+    console.error('获取申诉详情失败:', error)
     ElMessage.error('网络错误，请稍后重试')
     router.push('/manager/appeals')
   } finally {

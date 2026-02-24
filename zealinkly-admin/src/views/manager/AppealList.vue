@@ -52,6 +52,7 @@
             <span>{{ scope.row.appellantType === 'ELDER' ? '老人' : '志愿者' }}</span>
           </template>
         </el-table-column>
+        <el-table-column prop="appellantPhone" label="申诉人电话" width="150" />
         <el-table-column prop="type" label="申诉类型" width="120">
           <template #default="scope">
             <span>{{ getTypeText(scope.row.type) }}</span>
@@ -128,12 +129,24 @@ const getAppeals = async () => {
     
     const data = await response.json()
     if (data.code === 200) {
-      appeals.value = data.data.content || []
+      console.log('申诉列表数据:', data.data.content)
+      // 确保所有必要字段都存在，即使后端没有返回
+      appeals.value = (data.data.content || []).map(appeal => ({
+        id: appeal.id || '',
+        appellantName: appeal.appellantName || appeal.name || appeal.username || `用户${appeal.complainantId || '未知'}`,
+        appellantType: appeal.appellantType || (appeal.complainantType === 'ELDER' ? 'ELDER' : 'VOLUNTEER'),
+        appellantPhone: appeal.appellantPhone || appeal.phone || '',
+        type: appeal.type || 'TASK',
+        title: appeal.title || appeal.content || '无标题',
+        status: appeal.status || 'PENDING',
+        createdAt: appeal.createdAt || ''
+      }))
       total.value = data.data.totalElements || 0
     } else {
       ElMessage.error(data.message || '获取申诉列表失败')
     }
   } catch (error) {
+    console.error('获取申诉列表失败:', error)
     ElMessage.error('网络错误，请稍后重试')
   } finally {
     loading.value = false

@@ -125,7 +125,24 @@ const getVolunteerDetail = async () => {
     
     const data = await response.json()
     if (data.code === 200) {
-      Object.assign(volunteer, data.data)
+      console.log('志愿者详情数据:', data.data)
+      // 确保所有必要字段都存在，即使后端没有返回
+      const volunteerData = {
+        id: data.data.id || '',
+        username: data.data.username || '',
+        realName: data.data.realName || '',
+        phone: data.data.phone || '',
+        address: data.data.address || '',
+        idCardNumber: data.data.idCardNumber || '',
+        communityCardNumber: data.data.communityCardNumber || '',
+        lat: data.data.lat || null,
+        lng: data.data.lng || null,
+        points: data.data.points || 0,
+        enabled: data.data.enabled !== false,
+        createdAt: data.data.createdAt || '',
+        updatedAt: data.data.updatedAt || ''
+      }
+      Object.assign(volunteer, volunteerData)
     } else {
       ElMessage.error(data.message || '获取志愿者信息失败')
       router.push('/manager/volunteers')

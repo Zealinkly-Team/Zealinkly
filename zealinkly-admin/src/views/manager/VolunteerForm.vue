@@ -97,9 +97,24 @@ const getVolunteerDetail = async () => {
   try {
     const response = await volunteerAPI.getDetail(volunteerId.value)
     if (response.code === 200) {
-      Object.assign(volunteerForm, response.data)
+      console.log('志愿者详情数据:', response.data)
+      // 确保所有必要字段都存在，即使后端没有返回
+      const volunteerData = {
+        username: response.data.username || '',
+        realName: response.data.realName || '',
+        phone: response.data.phone || '',
+        address: response.data.address || '',
+        idCardNumber: response.data.idCardNumber || '',
+        communityCardNumber: response.data.communityCardNumber || '',
+        lat: response.data.lat || null,
+        lng: response.data.lng || null,
+        points: response.data.points || 0,
+        enabled: response.data.enabled !== false
+      }
+      Object.assign(volunteerForm, volunteerData)
     }
   } catch (error) {
+    console.error('获取志愿者详情失败:', error)
     // 错误已在API拦截器中处理
     router.push('/manager/volunteers')
   }
