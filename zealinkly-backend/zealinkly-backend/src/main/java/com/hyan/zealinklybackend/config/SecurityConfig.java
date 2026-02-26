@@ -34,6 +34,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll() // 认证接口公开
+                .requestMatchers("/api/greeting").permitAll() // 问候接口公开
                 .requestMatchers("/api/intent/**").permitAll() // 意图识别接口公开
                 .requestMatchers("/api/files/image/**", "/api/files/audio/**", "/api/files/document/**").permitAll() // 文件访问公开
                 .anyRequest().authenticated() // 其他接口需要认证
